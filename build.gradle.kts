@@ -41,8 +41,8 @@ dependencyManagement {
 dependencies {
 
     // підключаємо залежності для spring modulith
-    implementation("org.springframework.modulith:spring-modulith-starter-core:1.4.6")
-    testImplementation("org.springframework.modulith:spring-modulith-starter-test:1.4.6")
+    implementation("org.springframework.modulith:spring-modulith-starter-core")
+    testImplementation("org.springframework.modulith:spring-modulith-starter-test")
     implementation("org.springframework.modulith:spring-modulith-starter-jpa")
 
     implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6:$thymeleafExtrasVersion")
