@@ -1,4 +1,4 @@
-package org.l5g7.mealcraft.app.statistics;
+package org.l5g7.mealcraft.app.statistics.internal;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

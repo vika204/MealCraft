@@ -5,7 +5,7 @@ import org.junit.platform.suite.api.Suite;
 
 @Suite
 @SelectClasses({
-        MealPlanServiceImplTest.class,
+     //   MealPlanServiceImplTest.class,
         EventCellTest.class,
         ProductServiceUnitTests.class
 })

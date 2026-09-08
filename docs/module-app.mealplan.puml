@@ -1,0 +1,17 @@
+@startuml
+set separator none
+title Mealplan
+
+top to bottom direction
+
+!include <C4/C4>
+!include <C4/C4_Context>
+!include <C4/C4_Component>
+
+Container_Boundary("MealCraftApplication.MealCraftApplication_boundary", "MealCraftApplication", $tags="") {
+  Component(MealCraftApplication.MealCraftApplication.Mealplan, "Mealplan", $techn="Module", $descr="", $tags="", $link="")
+}
+
+
+SHOW_LEGEND(true)
+@enduml

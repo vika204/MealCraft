@@ -1,6 +1,6 @@
 package org.l5g7.mealcraft.app.recipes;
 
-import org.l5g7.mealcraft.app.mealplan.MealPlanRepository;
+import org.l5g7.mealcraft.app.mealplan.internal.MealPlanRepository;
 import org.l5g7.mealcraft.app.products.Product;
 import org.l5g7.mealcraft.app.products.ProductRepository;
 import org.l5g7.mealcraft.app.products.ProductService;

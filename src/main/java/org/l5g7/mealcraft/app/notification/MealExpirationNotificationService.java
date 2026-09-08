@@ -1,7 +1,7 @@
 package org.l5g7.mealcraft.app.notification;
 
-import org.l5g7.mealcraft.app.mealplan.MealPlan;
-import org.l5g7.mealcraft.app.mealplan.MealPlanRepository;
+import org.l5g7.mealcraft.app.mealplan.internal.MealPlan;
+import org.l5g7.mealcraft.app.mealplan.internal.MealPlanRepository;
 import org.l5g7.mealcraft.enums.MealStatus;
 import org.springframework.stereotype.Service;
 

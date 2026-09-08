@@ -1,7 +1,9 @@
-package org.l5g7.mealcraft.app.shoppingitem;
+package org.l5g7.mealcraft.app.shoppingitem.internal;
 
 import org.l5g7.mealcraft.app.products.Product;
 import org.l5g7.mealcraft.app.products.ProductRepository;
+import org.l5g7.mealcraft.app.shoppingitem.ShoppingItemDto;
+import org.l5g7.mealcraft.app.shoppingitem.ShoppingItemService;
 import org.l5g7.mealcraft.app.user.User;
 import org.l5g7.mealcraft.app.user.UserRepository;
 import org.l5g7.mealcraft.exception.EntityDoesNotExistException;

@@ -1,6 +1,7 @@
 package org.l5g7.mealcraft.app.statistics;
 
 import org.junit.jupiter.api.Test;
+import org.l5g7.mealcraft.app.statistics.internal.DailyStats;
 
 import java.util.Calendar;
 import java.util.Date;

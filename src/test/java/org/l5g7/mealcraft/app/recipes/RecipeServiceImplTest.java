@@ -3,7 +3,7 @@ package org.l5g7.mealcraft.app.recipes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.l5g7.mealcraft.app.mealplan.MealPlanRepository;
+import org.l5g7.mealcraft.app.mealplan.internal.MealPlanRepository;
 import org.l5g7.mealcraft.app.products.Product;
 import org.l5g7.mealcraft.app.products.ProductRepository;
 import org.l5g7.mealcraft.app.recipeingredient.RecipeIngredient;

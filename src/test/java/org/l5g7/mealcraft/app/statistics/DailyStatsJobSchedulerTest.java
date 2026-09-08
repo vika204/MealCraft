@@ -2,6 +2,7 @@ package org.l5g7.mealcraft.app.statistics;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.l5g7.mealcraft.app.statistics.internal.DailyStatsJobScheduler;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;

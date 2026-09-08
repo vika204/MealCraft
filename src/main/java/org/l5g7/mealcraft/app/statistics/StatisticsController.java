@@ -1,5 +1,6 @@
 package org.l5g7.mealcraft.app.statistics;
 
+import org.l5g7.mealcraft.app.statistics.internal.DailyStats;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;

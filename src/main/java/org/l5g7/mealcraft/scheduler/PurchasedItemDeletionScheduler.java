@@ -1,7 +1,7 @@
 package org.l5g7.mealcraft.scheduler;
 
 import lombok.RequiredArgsConstructor;
-import org.l5g7.mealcraft.app.shoppingitem.ShoppingItemRepository;
+import org.l5g7.mealcraft.app.shoppingitem.internal.ShoppingItemRepository;
 import org.l5g7.mealcraft.logging.LogUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

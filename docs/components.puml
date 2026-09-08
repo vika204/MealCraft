@@ -1,0 +1,20 @@
+@startuml
+set separator none
+title MealCraftApplication
+
+top to bottom direction
+
+!include <C4/C4>
+!include <C4/C4_Context>
+!include <C4/C4_Component>
+
+Container_Boundary("MealCraftApplication.MealCraftApplication_boundary", "MealCraftApplication", $tags="") {
+  Component(MealCraftApplication.MealCraftApplication.Mealplan, "Mealplan", $techn="Module", $descr="", $tags="", $link="")
+  Component(MealCraftApplication.MealCraftApplication.Statistics, "Statistics", $techn="Module", $descr="", $tags="", $link="")
+  Component(MealCraftApplication.MealCraftApplication.Shoppingitem, "Shoppingitem", $techn="Module", $descr="", $tags="", $link="")
+}
+
+Rel(MealCraftApplication.MealCraftApplication.Shoppingitem, MealCraftApplication.MealCraftApplication.Mealplan, "listens to", $techn="", $tags="", $link="")
+
+SHOW_LEGEND(true)
+@enduml

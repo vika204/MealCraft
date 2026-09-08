@@ -1,13 +1,12 @@
-package org.l5g7.mealcraft.app.mealplan;
+package org.l5g7.mealcraft.app.mealplan.internal;
 
 import jakarta.validation.Valid;
+import org.l5g7.mealcraft.app.mealplan.MealPlanDto;
+import org.l5g7.mealcraft.app.mealplan.MealPlanService;
 import org.l5g7.mealcraft.app.recipeingredient.RecipeIngredient;
 import org.l5g7.mealcraft.app.recipes.Recipe;
 import org.l5g7.mealcraft.app.recipes.RecipeRepository;
-import org.l5g7.mealcraft.app.shoppingitem.ShoppingItem;
-import org.l5g7.mealcraft.app.shoppingitem.ShoppingItemDto;
-import org.l5g7.mealcraft.app.shoppingitem.ShoppingItemRepository;
-import org.l5g7.mealcraft.app.shoppingitem.ShoppingItemService;
+
 import org.l5g7.mealcraft.app.user.User;
 import org.l5g7.mealcraft.app.user.UserRepository;
 import org.l5g7.mealcraft.enums.MealPlanColor;
@@ -20,28 +19,52 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.l5g7.mealcraft.app.mealplan.MealPlanIngredientsChangedEvent;
+import org.springframework.context.ApplicationEventPublisher;
+
 @Service
 public class MealPlanServiceImpl implements MealPlanService {
 
     private final MealPlanRepository mealPlanRepository;
     private final UserRepository userRepository;
     private final RecipeRepository recipeRepository;
+    // До модульного розбиття MealPlanServiceImpl напряму залежав від
+    // ShoppingItemService, ShoppingItemRepository, ShoppingItemDto та ShoppingItem.
+    // Тепер прямої залежності між mealplan і shoppingitem немає.
+    // MealPlanServiceImpl публікує MealPlanIngredientsChangedEvent,
+    // який обробляється лісенером у модулі shoppingitem.
+    private final ApplicationEventPublisher eventPublisher;
+
     private static final String ENTITY_NAME = "MealPlan";
     private static final String ENTITY_RECIPE = "Recipe";
-    private static final String ENTITY_USER= "User";
-    private final ShoppingItemRepository shoppingItemRepository;
-    private final ShoppingItemService shoppingItemService;
+    private static final String ENTITY_USER = "User";
 
-    public MealPlanServiceImpl(MealPlanRepository mealPlanRepository, UserRepository userRepository, RecipeRepository recipeRepository, ShoppingItemRepository shoppingItemRepository, ShoppingItemService shoppingItemService) {
+    public MealPlanServiceImpl(MealPlanRepository mealPlanRepository, UserRepository userRepository, RecipeRepository recipeRepository, ApplicationEventPublisher eventPublisher) {
         this.mealPlanRepository = mealPlanRepository;
         this.userRepository = userRepository;
         this.recipeRepository = recipeRepository;
-        this.shoppingItemRepository = shoppingItemRepository;
-        this.shoppingItemService = shoppingItemService;
+        this.eventPublisher = eventPublisher;
+    }
+
+    // Метод створює та публікує подію про зміну кількості
+    // конкретного інгредієнта в MealPlan.
+    private void publishIngredientChange(
+            Long userId,
+            RecipeIngredient ingredient,
+            double quantityDelta
+    ) {
+        eventPublisher.publishEvent(
+                new MealPlanIngredientsChangedEvent(
+                        userId,
+                        ingredient.getProduct().getId(),
+                        ingredient.getProduct().getName(),
+                        quantityDelta
+                )
+        );
     }
 
     @Override
-    public List<MealPlanDto> getAllMealPlans(){
+    public List<MealPlanDto> getAllMealPlans() {
         List<MealPlan> entities = mealPlanRepository.findAll();
 
         return entities.stream().map(entity -> MealPlanDto.builder()
@@ -57,7 +80,7 @@ public class MealPlanServiceImpl implements MealPlanService {
     }
 
     @Override
-    public MealPlanDto getMealPlanById(Long id){
+    public MealPlanDto getMealPlanById(Long id) {
         Optional<MealPlan> entity = mealPlanRepository.findById(id);
 
         if (entity.isPresent()) {
@@ -79,7 +102,7 @@ public class MealPlanServiceImpl implements MealPlanService {
     }
 
     @Override
-    public List<MealPlanDto> getUserMealPlans(Long userId){
+    public List<MealPlanDto> getUserMealPlans(Long userId) {
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
             throw new EntityDoesNotExistException(ENTITY_USER, String.valueOf(userId));
@@ -99,12 +122,12 @@ public class MealPlanServiceImpl implements MealPlanService {
     }
 
     @Override
-    public List<MealPlanDto> getUserMealPlansBetweenDates(Long userId, Date from, Date to){
+    public List<MealPlanDto> getUserMealPlansBetweenDates(Long userId, Date from, Date to) {
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
             throw new EntityDoesNotExistException(ENTITY_USER, String.valueOf(userId));
         }
-        List<MealPlan> entities = mealPlanRepository.findAllByUserOwnerAndPlanDateBetween(user.get(),from,to);
+        List<MealPlan> entities = mealPlanRepository.findAllByUserOwnerAndPlanDateBetween(user.get(), from, to);
 
         return entities.stream().map(entity -> MealPlanDto.builder()
                 .id(entity.getId())
@@ -119,12 +142,12 @@ public class MealPlanServiceImpl implements MealPlanService {
     }
 
     @Override
-    public List<MealPlanDto> getUserMealPlansBetweenDatesWithStatus(Long userId, Date from, Date to, MealStatus status){
+    public List<MealPlanDto> getUserMealPlansBetweenDatesWithStatus(Long userId, Date from, Date to, MealStatus status) {
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
             throw new EntityDoesNotExistException(ENTITY_USER, String.valueOf(userId));
         }
-        List<MealPlan> entities = mealPlanRepository.findMealPlanByUserOwnerAndStatusAndPlanDateBetween(user.get(),status,from,to);
+        List<MealPlan> entities = mealPlanRepository.findMealPlanByUserOwnerAndStatusAndPlanDateBetween(user.get(), status, from, to);
 
         return entities.stream().map(entity -> MealPlanDto.builder()
                 .id(entity.getId())
@@ -139,12 +162,12 @@ public class MealPlanServiceImpl implements MealPlanService {
     }
 
     @Override
-    public List<MealPlanDto> getUserMealPlansBetweenDatesWithNotStatus(Long userId, Date from, Date to, MealStatus status){
+    public List<MealPlanDto> getUserMealPlansBetweenDatesWithNotStatus(Long userId, Date from, Date to, MealStatus status) {
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
             throw new EntityDoesNotExistException(ENTITY_USER, String.valueOf(userId));
         }
-        List<MealPlan> entities = mealPlanRepository.findMealPlanByUserOwnerAndStatusNotAndPlanDateBetween(user.get(),status,from,to);
+        List<MealPlan> entities = mealPlanRepository.findMealPlanByUserOwnerAndStatusNotAndPlanDateBetween(user.get(), status, from, to);
 
         return entities.stream().map(entity -> MealPlanDto.builder()
                 .id(entity.getId())
@@ -159,14 +182,14 @@ public class MealPlanServiceImpl implements MealPlanService {
     }
 
     @Override
-    public void createMealPlan(@Valid MealPlanDto mealPlanDto){
+    public void createMealPlan(@Valid MealPlanDto mealPlanDto) {
 
         User userOwner = userRepository.findById(mealPlanDto.getUserOwnerId())
-                    .orElseThrow(() -> new EntityDoesNotExistException(ENTITY_USER, String.valueOf(mealPlanDto.getUserOwnerId())));
+                .orElseThrow(() -> new EntityDoesNotExistException(ENTITY_USER, String.valueOf(mealPlanDto.getUserOwnerId())));
 
 
         Recipe recipe = recipeRepository.findById(mealPlanDto.getRecipeId())
-                    .orElseThrow(() -> new EntityDoesNotExistException(ENTITY_RECIPE, String.valueOf(mealPlanDto.getRecipeId())));
+                .orElseThrow(() -> new EntityDoesNotExistException(ENTITY_RECIPE, String.valueOf(mealPlanDto.getRecipeId())));
 
         MealPlan entity = MealPlan.builder()
                 .userOwner(userOwner)
@@ -179,13 +202,20 @@ public class MealPlanServiceImpl implements MealPlanService {
 
         mealPlanRepository.save(entity);
 
-        for(RecipeIngredient ingredient : recipe.getIngredients()){
-            shoppingItemService.addShoppingItem(new ShoppingItemDto(null, ingredient.getProduct().getName(), userOwner.getId(), ingredient.getProduct().getId(),ingredient.getAmount()*entity.getServings(),false,null,null));
+        for (RecipeIngredient ingredient : recipe.getIngredients()) {
+            double quantity =
+                    ingredient.getAmount() * entity.getServings();
+
+            publishIngredientChange(
+                    userOwner.getId(),
+                    ingredient,
+                    quantity
+            );
         }
     }
 
     @Override
-    public void updateMealPlan(Long id, MealPlanDto mealPlanDto){
+    public void updateMealPlan(Long id, MealPlanDto mealPlanDto) {
         Optional<MealPlan> existing = mealPlanRepository.findById(id);
         if (existing.isEmpty()) {
             throw new EntityDoesNotExistException(ENTITY_NAME, String.valueOf(id));
@@ -197,10 +227,22 @@ public class MealPlanServiceImpl implements MealPlanService {
         Recipe recipe = recipeRepository.findById(mealPlanDto.getRecipeId())
                 .orElseThrow(() -> new EntityDoesNotExistException(ENTITY_RECIPE, String.valueOf(mealPlanDto.getRecipeId())));
 
-        for(RecipeIngredient ingredient : recipe.getIngredients()){
-            if(!Objects.equals(mealPlanDto.getServings(), existing.get().getServings())){
-                double newAmount = ingredient.getAmount()*(mealPlanDto.getServings()-existing.get().getServings());
-                shoppingItemService.addShoppingItem(new ShoppingItemDto(null, ingredient.getProduct().getName(), userOwner.getId(), ingredient.getProduct().getId(),newAmount,false,null,null));
+        for (RecipeIngredient ingredient : recipe.getIngredients()) {
+            if (!Objects.equals(
+                    mealPlanDto.getServings(),
+                    existing.get().getServings()
+            )) {
+
+                double quantityDelta =
+                        ingredient.getAmount()
+                                * (mealPlanDto.getServings()
+                                - existing.get().getServings());
+
+                publishIngredientChange(
+                        userOwner.getId(),
+                        ingredient,
+                        quantityDelta
+                );
             }
         }
 
@@ -215,41 +257,56 @@ public class MealPlanServiceImpl implements MealPlanService {
     }
 
     @Override
-    public void patchMealPlan(Long id, MealPlanDto mealPlanDto){
+    public void patchMealPlan(Long id, MealPlanDto mealPlanDto) {
         Optional<MealPlan> existing = mealPlanRepository.findById(id);
         if (existing.isEmpty()) {
             throw new EntityDoesNotExistException(ENTITY_NAME, String.valueOf(id));
         }
 
-        if(mealPlanDto.getUserOwnerId()!=null){
+        if (mealPlanDto.getUserOwnerId() != null) {
             User userOwner = userRepository.findById(mealPlanDto.getUserOwnerId())
                     .orElseThrow(() -> new EntityDoesNotExistException(ENTITY_USER, String.valueOf(mealPlanDto.getUserOwnerId())));
             existing.get().setUserOwner(userOwner);
         }
 
-        if(mealPlanDto.getRecipeId()!=null){
-            Recipe recipe = recipeRepository.findById(mealPlanDto.getRecipeId())
-                    .orElseThrow(() -> new EntityDoesNotExistException(ENTITY_RECIPE, String.valueOf(mealPlanDto.getRecipeId())));
+        if (mealPlanDto.getRecipeId() != null) {
+
+            Recipe recipe = recipeRepository
+                    .findById(mealPlanDto.getRecipeId())
+                    .orElseThrow(() ->
+                            new EntityDoesNotExistException(
+                                    ENTITY_RECIPE,
+                                    String.valueOf(
+                                            mealPlanDto.getRecipeId()
+                                    )
+                            )
+                    );
 
             existing.get().setRecipe(recipe);
-            for(RecipeIngredient ingredient : recipe.getIngredients()){
-                shoppingItemRepository.save(new ShoppingItem(null,existing.get().getUserOwner(),ingredient.getProduct(),ingredient.getAmount(),false,null));
+
+            for (RecipeIngredient ingredient : recipe.getIngredients()) {
+
+                publishIngredientChange(
+                        existing.get().getUserOwner().getId(),
+                        ingredient,
+                        ingredient.getAmount()
+                );
             }
         }
 
-        if(mealPlanDto.getPlanDate()!=null){
+        if (mealPlanDto.getPlanDate() != null) {
             existing.get().setPlanDate(mealPlanDto.getPlanDate());
         }
 
-        if(mealPlanDto.getServings()!=null){
+        if (mealPlanDto.getServings() != null) {
             existing.get().setServings(mealPlanDto.getServings());
         }
 
-        if(mealPlanDto.getStatus()!=null){
+        if (mealPlanDto.getStatus() != null) {
             existing.get().setStatus(mealPlanDto.getStatus());
         }
 
-        if(mealPlanDto.getColor()!=null){
+        if (mealPlanDto.getColor() != null) {
             existing.get().setColor(MealPlanColor.fromHex(mealPlanDto.getColor()));
         }
 
@@ -257,13 +314,23 @@ public class MealPlanServiceImpl implements MealPlanService {
     }
 
     @Override
-    public void deleteMealPlan(Long id){
+    public void deleteMealPlan(Long id) {
         Optional<MealPlan> existing = mealPlanRepository.findById(id);
         if (existing.isEmpty()) {
             throw new EntityDoesNotExistException(ENTITY_NAME, String.valueOf(id));
         }
-        for(RecipeIngredient ingredient : existing.get().getRecipe().getIngredients()){
-            shoppingItemService.removeShoppingItem(new ShoppingItemDto(null, ingredient.getProduct().getName(), existing.get().getUserOwner().getId(), ingredient.getProduct().getId(), existing.get().getServings()*ingredient.getAmount(),false,null,null));
+        for (RecipeIngredient ingredient :
+                existing.get().getRecipe().getIngredients()) {
+
+            double quantity =
+                    existing.get().getServings()
+                            * ingredient.getAmount();
+
+            publishIngredientChange(
+                    existing.get().getUserOwner().getId(),
+                    ingredient,
+                    -quantity
+            );
         }
 
         mealPlanRepository.deleteById(id);

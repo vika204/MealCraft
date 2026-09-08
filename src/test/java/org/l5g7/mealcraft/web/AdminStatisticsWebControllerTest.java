@@ -2,7 +2,7 @@ package org.l5g7.mealcraft.web;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.l5g7.mealcraft.app.statistics.DailyStats;
+import org.l5g7.mealcraft.app.statistics.internal.DailyStats;
 import org.mockito.Mockito;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;

@@ -2,6 +2,8 @@ package org.l5g7.mealcraft.app.statistics;
 
 import org.l5g7.mealcraft.app.products.ProductRepository;
 import org.l5g7.mealcraft.app.recipes.RecipeRepository;
+import org.l5g7.mealcraft.app.statistics.internal.DailyStats;
+import org.l5g7.mealcraft.app.statistics.internal.DailyStatsRepository;
 import org.l5g7.mealcraft.app.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

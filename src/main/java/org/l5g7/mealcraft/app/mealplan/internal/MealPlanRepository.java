@@ -1,4 +1,4 @@
-package org.l5g7.mealcraft.app.mealplan;
+package org.l5g7.mealcraft.app.mealplan.internal;
 
 import org.l5g7.mealcraft.app.recipes.Recipe;
 import org.l5g7.mealcraft.app.user.User;

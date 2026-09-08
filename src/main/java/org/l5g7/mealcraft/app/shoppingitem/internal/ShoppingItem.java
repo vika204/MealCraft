@@ -1,4 +1,4 @@
-package org.l5g7.mealcraft.app.shoppingitem;
+package org.l5g7.mealcraft.app.shoppingitem.internal;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

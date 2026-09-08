@@ -31,12 +31,30 @@ repositories {
     mavenCentral()
 }
 
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.modulith:spring-modulith-bom:1.4.6")
+    }
+}
+
 dependencies {
-    implementation ("org.thymeleaf.extras:thymeleaf-extras-springsecurity6:$thymeleafExtrasVersion")
+    implementation("org.springframework.modulith:spring-modulith-starter-core")
+    implementation("org.springframework.modulith:spring-modulith-starter-jpa")
+    testImplementation("org.springframework.modulith:spring-modulith-starter-test")
+}
+
+dependencies {
+
+    // перша вимога: підключаємо залежності для spring modulith
+    implementation("org.springframework.modulith:spring-modulith-starter-core:1.4.6")
+    testImplementation("org.springframework.modulith:spring-modulith-starter-test:1.4.6")
+    implementation("org.springframework.modulith:spring-modulith-starter-jpa")
+
+    implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6:$thymeleafExtrasVersion")
     implementation("org.springframework.boot:spring-boot-starter-batch")
-    implementation ("org.springframework.boot:spring-boot-starter-mail")
+    implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("org.springframework.boot:spring-boot-starter-web") // Logback is included automatically here, we don't need any async logs, because app is small
-    implementation ("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("com.h2database:h2")
     implementation("org.apache.httpcomponents.client5:httpclient5")
     implementation("org.apache.httpcomponents.core5:httpcore5")
@@ -47,8 +65,8 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    testImplementation ("org.springframework.security:spring-security-test")
-    testImplementation ("org.junit.platform:junit-platform-suite:$junitVersion")
+    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.junit.platform:junit-platform-suite:$junitVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     compileOnly("org.projectlombok:lombok")
     runtimeOnly("org.postgresql:postgresql")

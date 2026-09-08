@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.l5g7.mealcraft.app.products.ProductRepository;
 import org.l5g7.mealcraft.app.recipes.RecipeRepository;
+import org.l5g7.mealcraft.app.statistics.internal.DailyStats;
+import org.l5g7.mealcraft.app.statistics.internal.DailyStatsRepository;
 import org.l5g7.mealcraft.app.user.UserRepository;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;

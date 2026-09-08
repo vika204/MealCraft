@@ -1,4 +1,4 @@
-package org.l5g7.mealcraft.app.mealplan;
+package org.l5g7.mealcraft.app.mealplan.internal;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
