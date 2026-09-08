@@ -37,15 +37,10 @@ dependencyManagement {
     }
 }
 
-dependencies {
-    implementation("org.springframework.modulith:spring-modulith-starter-core")
-    implementation("org.springframework.modulith:spring-modulith-starter-jpa")
-    testImplementation("org.springframework.modulith:spring-modulith-starter-test")
-}
 
 dependencies {
 
-    // перша вимога: підключаємо залежності для spring modulith
+    // підключаємо залежності для spring modulith
     implementation("org.springframework.modulith:spring-modulith-starter-core:1.4.6")
     testImplementation("org.springframework.modulith:spring-modulith-starter-test:1.4.6")
     implementation("org.springframework.modulith:spring-modulith-starter-jpa")
